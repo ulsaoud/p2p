@@ -44,44 +44,17 @@
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #0f0; }
 
-        /* Hacker inputs and buttons */
-        .cyber-input {
-            background: rgba(0, 20, 0, 0.85);
-            border: 1px solid #0f0;
-            color: #0f0;
-        }
-        .cyber-input:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.4), inset 0 0 5px rgba(0, 255, 0, 0.2);
-        }
-        .cyber-button {
-            background: rgba(0, 20, 0, 0.9);
-            border: 1px solid #0f0;
-            color: #0f0;
-            text-transform: uppercase;
-            transition: all 0.2s;
-        }
-        .cyber-button:hover:not(:disabled) {
-            background: #0f0;
-            color: #000;
-            box-shadow: 0 0 15px #0f0;
-        }
-        .cyber-button:disabled {
-            border-color: #004411;
-            color: #004411;
-            cursor: not-allowed;
-        }
+        .cyber-input { background: rgba(0, 20, 0, 0.85); border: 1px solid #0f0; color: #0f0; }
+        .cyber-input:focus { outline: none; box-shadow: 0 0 10px rgba(0, 255, 0, 0.4), inset 0 0 5px rgba(0, 255, 0, 0.2); }
+        .cyber-button { background: rgba(0, 20, 0, 0.9); border: 1px solid #0f0; color: #0f0; text-transform: uppercase; transition: all 0.2s; cursor: pointer;}
+        .cyber-button:hover:not(:disabled) { background: #0f0; color: #000; box-shadow: 0 0 15px #0f0; }
+        .cyber-button:disabled { border-color: #004411; color: #004411; cursor: not-allowed; }
 
-        /* Glitch and Scanline */
         .glitch-text { text-shadow: 2px 0 0 rgba(255,0,60,0.7), -2px 0 0 rgba(0,240,255,0.7); }
         .scanline {
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 15px;
+            position: absolute; top: 0; left: 0; right: 0; height: 15px;
             background: linear-gradient(to bottom, transparent, rgba(0,255,0,0.5), transparent);
-            opacity: 0.3;
-            animation: scanline 6s linear infinite;
-            z-index: 50;
-            pointer-events: none;
+            opacity: 0.3; animation: scanline 6s linear infinite; z-index: 50; pointer-events: none;
         }
         @keyframes scanline { 0% { transform: translateY(-100vh); } 100% { transform: translateY(100vh); } }
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
@@ -90,7 +63,7 @@
 </head>
 <body class="flex justify-center items-center text-cyber-green font-mono relative">
 
-    <!-- CANVAS BACKGROUND: MATRIX DIGITAL RAIN -->
+    <!-- CANVAS BACKGROUND -->
     <canvas id="matrix-canvas" class="fixed inset-0 z-0 opacity-40 pointer-events-none"></canvas>
     <div class="scanline"></div>
 
@@ -102,13 +75,12 @@
     <!-- CANVAS IMAGE VIEWER MODAL -->
     <div id="image-viewer-modal" class="hidden fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center backdrop-blur-sm">
         <div class="w-full flex justify-between items-center p-4 border-b border-cyber-green bg-black">
-            <span class="text-xs">> IMAGE_ANALYSIS_TOOL</span>
+            <span class="text-xs">> IMAGE_ANALYSIS_TOOL (CANVAS)</span>
             <button onclick="closeImageViewer()" class="cyber-button px-3 py-1 hover:bg-cyber-red hover:border-cyber-red hover:text-white text-xs">
                 <i class="fa-solid fa-xmark"></i> CLOSE
             </button>
         </div>
         <div class="flex-1 w-full flex items-center justify-center p-4 relative overflow-hidden">
-            <!-- Canvas where image will be drawn -->
             <canvas id="viewer-canvas" class="max-w-full max-h-full border border-cyber-border shadow-[0_0_20px_rgba(0,255,0,0.2)] object-contain"></canvas>
         </div>
     </div>
@@ -116,7 +88,7 @@
     <!-- MAIN CONTAINER -->
     <div class="w-full max-w-lg h-full flex flex-col relative z-10 border-x border-cyber-border bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(0,255,0,0.1)]">
 
-        <!-- ==================== 1. DECRYPTION SCREEN ==================== -->
+        <!-- 1. DECRYPTION SCREEN -->
         <div id="login-screen" class="absolute inset-0 z-40 flex flex-col items-center justify-center p-8 bg-black/90 fade-in">
             <div class="mb-10 flex flex-col items-center">
                 <i class="fa-solid fa-user-secret text-7xl mb-4 text-cyber-green glitch-text"></i>
@@ -137,7 +109,7 @@
             <div id="login-error" class="text-cyber-red mt-5 text-sm hidden uppercase animate-pulse font-bold">> FATAL: ACCESS_DENIED</div>
         </div>
 
-        <!-- ==================== 2. NODE IDENTITY SCREEN ==================== -->
+        <!-- 2. NODE IDENTITY SCREEN -->
         <div id="profile-screen" class="hidden absolute inset-0 z-30 flex-col items-center justify-center p-6 bg-black/90">
             <h2 class="text-xl font-bold mb-8 tracking-widest border-b border-cyber-green pb-2 glitch-text">> SELECT_OPERATOR_NODE</h2>
             <div class="w-full space-y-6">
@@ -163,10 +135,9 @@
             </div>
         </div>
 
-        <!-- ==================== 3. CHAT TERMINAL ==================== -->
+        <!-- 3. CHAT TERMINAL -->
         <div id="chat-screen" class="hidden flex-col h-full w-full z-20 relative bg-transparent">
             
-            <!-- Terminal Header -->
             <header class="bg-[#020502] border-b border-cyber-green px-4 py-3 flex items-center justify-between shrink-0 z-10 shadow-[0_4px_10px_rgba(0,255,0,0.1)]">
                 <div class="flex flex-col">
                     <h2 class="font-bold text-sm tracking-widest flex items-center gap-2">
@@ -177,46 +148,41 @@
                         <span id="node-identity-display" class="text-[10px] opacity-70 tracking-widest"></span>
                     </div>
                 </div>
-                <button onclick="logout()" class="cyber-button px-3 py-1.5 text-xs hover:bg-cyber-red hover:text-white hover:border-cyber-red" title="TERMINATE">
+                <button onclick="logout()" class="cyber-button px-3 py-1.5 text-xs hover:bg-cyber-red hover:text-white hover:border-cyber-red">
                     <i class="fa-solid fa-power-off"></i> ENDED
                 </button>
             </header>
 
-            <!-- Messages Area -->
             <main id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 z-10 scroll-smooth flex flex-col">
                 <div id="loading-spinner" class="flex justify-center items-center h-full m-auto text-sm animate-pulse tracking-widest">
                     > ESTABLISHING_ENCRYPTED_TUNNEL...
                 </div>
             </main>
 
-            <!-- Input Area -->
             <footer class="bg-[#020502] border-t border-cyber-border p-3 shrink-0 z-20 relative shadow-[0_-4px_10px_rgba(0,255,0,0.05)]">
                 
-                <!-- Editing Indicator -->
                 <div id="edit-indicator" class="hidden absolute -top-8 left-0 w-full bg-[#001122] text-cyber-blue text-[10px] py-1.5 px-4 flex justify-between items-center border-t border-cyber-blue tracking-wider">
                     <span>> OVERWRITING_DATA_PACKET...</span>
-                    <button onclick="cancelEdit()" class="hover:text-white"><i class="fa-solid fa-xmark"></i> ENDED_EDIT</button>
+                    <button type="button" onclick="cancelEdit()" class="hover:text-white"><i class="fa-solid fa-xmark"></i> ENDED_EDIT</button>
                 </div>
 
-                <!-- File Preview -->
                 <div id="file-preview-container" class="hidden mb-2 p-2 border border-cyber-border bg-black flex items-center justify-between">
                     <div class="flex items-center gap-2 text-xs truncate max-w-[80%]">
-                        <i class="fa-solid fa-microchip animate-pulse"></i>
-                        <span id="file-preview-name" class="truncate opacity-80">filename.ext</span>
-                        <span class="text-[9px] text-cyber-blue">[BUFFER LOADED]</span>
+                        <i class="fa-solid fa-image animate-pulse"></i>
+                        <span id="file-preview-name" class="truncate opacity-80">image.jpg</span>
+                        <span class="text-[9px] text-cyber-blue">[CANVAS BUFFER]</span>
                     </div>
-                    <button onclick="removeFile()" class="text-cyber-red hover:text-white px-2"><i class="fa-solid fa-trash"></i></button>
+                    <button type="button" onclick="removeFile()" class="text-cyber-red hover:text-white px-2"><i class="fa-solid fa-trash"></i></button>
                 </div>
 
                 <form id="message-form" class="flex items-end space-x-2 w-full relative">
-                    <!-- File Upload Button (Max 10MB) -->
-                    <label class="cyber-button w-12 h-12 flex items-center justify-center shrink-0 cursor-pointer text-lg mb-1" title="UPLOAD FILE (MAX 10MB)">
-                        <i class="fa-solid fa-paperclip"></i>
-                        <input type="file" id="file-upload" class="hidden" accept="image/*,video/*,audio/*,.pdf,.txt,.zip">
+                    <!-- ONLY IMAGES ALLOWED NOW -->
+                    <label class="cyber-button w-12 h-12 flex items-center justify-center shrink-0 cursor-pointer text-lg mb-1" title="UPLOAD IMAGE">
+                        <i class="fa-solid fa-image"></i>
+                        <input type="file" id="file-upload" class="hidden" accept="image/*">
                     </label>
 
                     <div class="flex-1 relative">
-                        <!-- Multi-line text area -->
                         <textarea id="message-input" rows="1" placeholder="> INPUT_COMMAND..." 
                             class="cyber-input w-full rounded-none py-3 px-3 resize-none max-h-32 text-sm leading-relaxed"
                             style="min-height: 48px;"></textarea>
@@ -233,31 +199,31 @@
     <!-- Firebase Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // =====================================================================
-        // ⚠️ GITHUB USERS: REPLACE WITH YOUR OWN FIREBASE CONFIG
-        // =====================================================================
-        let firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "YOUR_API_KEY", authDomain: "YOUR_PROJECT.firebaseapp.com", projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com", messagingSenderId: "YOUR_SENDER_ID", appId: "YOUR_APP_ID"
+        const firebaseConfig = {
+            apiKey: "AIzaSyCl6_y0CuWUQgNWMyf6FFe0PZtCGM19EVM",
+            authDomain: "p2p-chat-2662f.firebaseapp.com",
+            projectId: "p2p-chat-2662f",
+            storageBucket: "p2p-chat-2662f.firebasestorage.app",
+            messagingSenderId: "1048369775196",
+            appId: "1:1048369775196:web:85dc93ae34cf7acc9b5c99",
+            measurementId: "G-KFGV6XSR98"
         };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nexus-core-chat-v5';
+        const appId = 'nexus-core-chat-v5';
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- State Variables ---
         let currentUser = null;
-        let myNodeId = null; // 'MALE ' or 'FEMALE '
+        let myNodeId = null; 
         let unsubMessages = null, unsubPresence = null;
         let editingMsgId = null;
         let selectedFile = null; 
         window.messageCache = {};
 
-        // --- DOM Elements ---
         const screens = { login: document.getElementById('login-screen'), profile: document.getElementById('profile-screen'), chat: document.getElementById('chat-screen') };
         const loginForm = document.getElementById('login-form'), passInput = document.getElementById('password-input'), loginErr = document.getElementById('login-error');
         const chatMessages = document.getElementById('chat-messages'), msgForm = document.getElementById('message-form'), msgInput = document.getElementById('message-input');
@@ -292,9 +258,12 @@
             setInterval(draw, 33);
         };
         initMatrix();
-        window.addEventListener('resize', initMatrix);
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('matrix-canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
 
-        // --- SYS Toast ---
         const sysMsg = (text, isError = false) => {
             const toast = document.getElementById('sys-toast');
             document.getElementById('toast-text').innerHTML = `> ${text}`;
@@ -303,18 +272,23 @@
             setTimeout(() => { toast.style.opacity = '0'; }, 3000);
         };
 
-        // --- Auto-resize Textarea ---
         msgInput.addEventListener('input', function() {
             this.style.height = '48px';
             this.style.height = (this.scrollHeight < 128 ? this.scrollHeight : 128) + 'px';
         });
 
-        // --- CANVAS IMAGE COMPRESSION & UPLOAD ---
+        // --- CANVAS IMAGE COMPRESSION & UPLOAD (ONLY IMAGES) ---
         fileUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // NEW 10MB LIMIT
+            // सिर्फ इमेजेज स्वीकार करें
+            if (!file.type.startsWith('image/')) {
+                sysMsg("ERR: ONLY IMAGES ALLOWED", true);
+                fileUpload.value = '';
+                return;
+            }
+
             const MAX_SIZE = 10 * 1024 * 1024; // 10MB
             if (file.size > MAX_SIZE) {
                 sysMsg("ERR: FILE EXCEEDS 10MB PROTOCOL LIMIT", true);
@@ -322,50 +296,31 @@
                 return;
             }
 
-            if (file.type.startsWith('image/')) {
-                // Compress image using Canvas to fit Firestore limits
-                sysMsg("COMPRESSING IMAGE_DATA VIA CANVAS...");
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width, height = img.height;
-                        const MAX_DIM = 1200; // Resize large images
-                        if (width > height && width > MAX_DIM) { height *= MAX_DIM / width; width = MAX_DIM; } 
-                        else if (height > MAX_DIM) { width *= MAX_DIM / height; height = MAX_DIM; }
-                        
-                        canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // Convert back to base64 with lower quality for database safety
-                        const compressedData = canvas.toDataURL('image/jpeg', 0.6);
-                        
-                        selectedFile = { data: compressedData, type: 'image/jpeg', name: file.name };
-                        filePreviewName.textContent = file.name + " [COMPRESSED]";
-                        filePreviewBox.classList.remove('hidden');
-                        sysMsg("IMAGE_DATA_LOADED");
-                    };
-                    img.src = ev.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                // Non-image files: Warn if > 800KB due to firestore doc limit
-                if(file.size > 800 * 1024) {
-                    sysMsg("ERR: NON-IMAGE FILES MUST BE < 800KB FOR FIRESTORE", true);
-                    fileUpload.value = '';
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    selectedFile = { data: ev.target.result, type: file.type, name: file.name };
-                    filePreviewName.textContent = file.name;
+            sysMsg("COMPRESSING IMAGE_DATA VIA CANVAS...");
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width, height = img.height;
+                    const MAX_DIM = 1200; 
+                    if (width > height && width > MAX_DIM) { height *= MAX_DIM / width; width = MAX_DIM; } 
+                    else if (height > MAX_DIM) { width *= MAX_DIM / height; height = MAX_DIM; }
+                    
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const compressedData = canvas.toDataURL('image/jpeg', 0.6);
+                    
+                    selectedFile = { data: compressedData, type: 'image/jpeg', name: file.name };
+                    filePreviewName.textContent = file.name + " [COMPRESSED]";
                     filePreviewBox.classList.remove('hidden');
-                    sysMsg("FILE_DATA_LOADED");
+                    sysMsg("IMAGE_DATA_LOADED");
                 };
-                reader.readAsDataURL(file);
-            }
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
         });
 
         window.removeFile = () => {
@@ -382,7 +337,6 @@
             viewerModal.classList.remove('hidden');
             const img = new Image();
             img.onload = () => {
-                // Clear and resize canvas to match image ratio
                 viewerCanvas.width = img.width;
                 viewerCanvas.height = img.height;
                 vCtx.clearRect(0, 0, viewerCanvas.width, viewerCanvas.height);
@@ -398,10 +352,7 @@
 
         // --- Auth & Login Logic ---
         const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
-                else await signInAnonymously(auth);
-            } catch (e) { sysMsg("CRITICAL: AUTH_SERVER_OFFLINE", true); }
+            try { await signInAnonymously(auth); } catch (e) { sysMsg("CRITICAL: AUTH_SERVER_OFFLINE", true); }
         };
         onAuthStateChanged(auth, (user) => { currentUser = user; });
         initAuth();
@@ -417,8 +368,11 @@
         });
 
         window.selectUser = (nodeId) => {
-            if (!currentUser) return;
-            myNodeId = nodeId; // Set current user's node identity
+            if (!currentUser) {
+                sysMsg("WAITING_FOR_FIREBASE_AUTH...", true);
+                return;
+            }
+            myNodeId = nodeId;
             document.getElementById('node-identity-display').textContent = `[ ${nodeId} ]`;
             screens.profile.classList.add('hidden'); screens.profile.classList.remove('flex');
             screens.chat.classList.remove('hidden'); screens.chat.classList.add('flex', 'fade-in');
@@ -442,69 +396,84 @@
             });
         };
 
-        // --- Chat Logic ---
+        // --- Chat Logic & Read Receipts ---
         const loadMessages = () => {
             const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages');
             unsubMessages = onSnapshot(messagesRef, (snapshot) => {
                 const msgs = []; window.messageCache = {};
+                document.getElementById('loading-spinner').style.display = 'none';
+                
                 snapshot.forEach(doc => { const d = {id: doc.id, ...doc.data()}; msgs.push(d); window.messageCache[doc.id] = d; });
                 msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                
+                // Read Receipt Logic: सामने वाले का अनरीड मैसेज देखते ही उसे 'isRead: true' कर दो
+                msgs.forEach(async (m) => {
+                    if (m.senderNode !== myNodeId && !m.isRead) {
+                        try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_messages', m.id), { isRead: true }); } catch(e) {}
+                    }
+                });
+
                 renderMessages(msgs);
             });
         };
 
         const renderMessages = (messages) => {
-            chatMessages.innerHTML = '';
+            const loadingHtml = `<div id="loading-spinner" style="display:none;" class="flex justify-center items-center h-full m-auto text-sm animate-pulse tracking-widest">> ESTABLISHING_ENCRYPTED_TUNNEL...</div>`;
+            chatMessages.innerHTML = loadingHtml;
+            
             if (messages.length === 0) return;
 
             messages.forEach((msg) => {
-                // LOGIC FIX: 'isMine' is true ONLY if the senderNode matches myNodeId.
-                // This guarantees my messages are ALWAYS on the right, regardless of which node I am.
                 const isMine = msg.senderNode === myNodeId;
                 
                 const div = document.createElement('div');
                 div.className = `flex w-full group ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
                 
                 const bubbleClass = isMine ? 'border border-cyber-green bg-[#001a00] text-cyber-green shadow-[0_0_8px_rgba(0,255,0,0.15)] rounded-l-md rounded-tr-md' : 'border border-cyber-border bg-black text-gray-300 shadow-[0_0_8px_rgba(255,255,255,0.05)] rounded-r-md rounded-tl-md';
-                const nodeLabel = !isMine ? `<div class="text-[9px] mb-1.5 font-bold tracking-widest opacity-80 border-b border-cyber-border pb-1">${msg.senderNode}</div>` : '';
                 
+                // Name label completely removed as requested
                 let mediaHtml = '';
-                if (msg.fileData) {
-                    if (msg.fileType.startsWith('image/')) {
-                        // Image click triggers Canvas Viewer
-                        mediaHtml = `<img src="${msg.fileData}" onclick="viewImage('${msg.fileData}')" class="max-w-full h-auto max-h-52 border border-cyber-border mb-2 cursor-pointer hover:opacity-80 transition-opacity rounded-sm" title="CLICK TO OPEN IN CANVAS VIEWER">`;
-                    } else if (msg.fileType.startsWith('video/')) {
-                        mediaHtml = `<video src="${msg.fileData}" controls class="max-w-full h-auto max-h-52 border border-cyber-border mb-2 rounded-sm"></video>`;
+                if (msg.fileData && msg.fileType && msg.fileType.startsWith('image/')) {
+                    // Image with Download Button below it
+                    mediaHtml = `
+                        <div class="flex flex-col mb-2">
+                            <img src="${msg.fileData}" onclick="viewImage('${msg.fileData}')" class="max-w-full h-auto max-h-52 border border-cyber-border cursor-pointer hover:opacity-80 transition-opacity rounded-sm" title="CLICK TO OPEN IN CANVAS VIEWER">
+                            <a href="${msg.fileData}" download="${msg.fileName || 'image.jpg'}" class="mt-1.5 self-end text-[10px] bg-black border border-cyber-blue text-cyber-blue px-2 py-1 rounded-sm hover:bg-cyber-blue hover:text-black transition-colors font-bold shadow-[0_0_5px_rgba(0,240,255,0.2)]">
+                                <i class="fa-solid fa-download"></i> DOWNLOAD
+                            </a>
+                        </div>`;
+                }
+
+                const canEdit = isMine && !msg.fileData;
+                const editedLabel = msg.isEdited ? `<span class="text-[9px] text-cyber-blue mx-1 tracking-widest">[MODIFIED]</span>` : '';
+                const timeStr = new Date(msg.timestamp).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true});
+
+                // Single vs Double Tick Logic
+                let tickIcon = '';
+                if (isMine) {
+                    if (msg.isRead) {
+                        tickIcon = `<i class="fa-solid fa-check-double text-[10px] ml-1 text-cyber-blue" title="READ"></i>`; // Blue double tick
                     } else {
-                        mediaHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="block bg-black border border-cyber-green p-2.5 text-xs mb-2 hover:bg-cyber-green hover:text-black transition-colors font-bold rounded-sm"><i class="fa-solid fa-download"></i> DL_FILE: ${msg.fileName}</a>`;
+                        tickIcon = `<i class="fa-solid fa-check text-[10px] ml-1 text-cyber-green" title="SENT"></i>`; // Single green tick
                     }
                 }
 
-                // Rule: Edit button ONLY appears if there is NO file attached.
-                const canEdit = isMine && !msg.fileData;
-                const editedLabel = msg.isEdited ? `<span class="text-[9px] text-cyber-blue ml-2 tracking-widest">[MODIFIED]</span>` : '';
-                const timeStr = new Date(msg.timestamp).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true});
-
                 div.innerHTML = `
                     <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'} max-w-[85%] relative">
-                        <!-- Message Box -->
                         <div class="relative p-3 ${bubbleClass} flex flex-col">
-                            ${nodeLabel}
                             ${mediaHtml}
                             <div class="text-[15px] leading-relaxed whitespace-pre-wrap break-words">${msg.text ? msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''}</div>
                             
-                            <!-- Action Buttons (Edit/Delete) hover menu -->
                             <div class="absolute ${isMine ? '-left-12' : '-right-12'} top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1.5 z-10">
                                 ${canEdit ? `<button onclick="initEdit('${msg.id}')" class="w-7 h-7 bg-black border border-cyber-blue text-cyber-blue hover:bg-cyber-blue hover:text-black shadow-[0_0_5px_#00f0ff] rounded-sm"><i class="fa-solid fa-pen text-xs"></i></button>` : ''}
                                 <button onclick="deleteMsg('${msg.id}')" class="w-7 h-7 bg-black border border-cyber-red text-cyber-red hover:bg-cyber-red hover:text-white shadow-[0_0_5px_#ff003c] rounded-sm"><i class="fa-solid fa-trash text-xs"></i></button>
                             </div>
                         </div>
                         
-                        <!-- Timestamp (OUTSIDE the box) -->
-                        <div class="flex items-center mt-1.5 px-1 opacity-70">
-                            <span class="text-[10px] tracking-wider text-cyber-green">${timeStr}</span>
+                        <div class="flex items-center mt-1.5 px-1 opacity-80">
+                            <span class="text-[9px] tracking-wider text-cyber-green">${timeStr}</span>
                             ${editedLabel}
-                            ${isMine ? '<i class="fa-solid fa-check-double text-[10px] ml-1.5 text-cyber-green"></i>' : ''}
+                            ${tickIcon}
                         </div>
                     </div>
                 `;
@@ -513,10 +482,9 @@
             setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
         };
 
-        // --- Edit Message ---
         window.initEdit = (msgId) => {
             const msg = window.messageCache[msgId];
-            if (!msg || msg.fileData) return; // Prevent editing files just in case
+            if (!msg || msg.fileData) return;
             editingMsgId = msgId; msgInput.value = msg.text; msgInput.focus();
             
             document.getElementById('edit-indicator').classList.remove('hidden');
@@ -550,7 +518,7 @@
                 if (isEditing) {
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_messages', currentEditId), { text: text, isEdited: true });
                 } else {
-                    const payload = { text: text, senderId: currentUser.uid, senderNode: myNodeId, timestamp: Date.now() };
+                    const payload = { text: text, senderId: currentUser.uid, senderNode: myNodeId, timestamp: Date.now(), isRead: false };
                     if (filePayload) { payload.fileData = filePayload.data; payload.fileType = filePayload.type; payload.fileName = filePayload.name; }
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages'), payload);
                 }
