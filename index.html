@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SECURE TERMINAL OS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { mono: ['"Share Tech Mono"', 'monospace'] },
+                    colors: {
+                        cyber: {
+                            green: '#0f0',
+                            dark: '#020502',
+                            border: '#004411',
+                            red: '#ff003c',
+                            blue: '#00f0ff'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            height: 100dvh;
+            overflow: hidden;
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Share Tech Mono', monospace;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #0f0; }
+
+        /* Hacker inputs and buttons */
+        .cyber-input {
+            background: rgba(0, 20, 0, 0.85);
+            border: 1px solid #0f0;
+            color: #0f0;
+        }
+        .cyber-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.4), inset 0 0 5px rgba(0, 255, 0, 0.2);
+        }
+        .cyber-button {
+            background: rgba(0, 20, 0, 0.9);
+            border: 1px solid #0f0;
+            color: #0f0;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .cyber-button:hover:not(:disabled) {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+        }
+        .cyber-button:disabled {
+            border-color: #004411;
+            color: #004411;
+            cursor: not-allowed;
+        }
+
+        /* Glitch and Scanline */
+        .glitch-text { text-shadow: 2px 0 0 rgba(255,0,60,0.7), -2px 0 0 rgba(0,240,255,0.7); }
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 15px;
+            background: linear-gradient(to bottom, transparent, rgba(0,255,0,0.5), transparent);
+            opacity: 0.3;
+            animation: scanline 6s linear infinite;
+            z-index: 50;
+            pointer-events: none;
+        }
+        @keyframes scanline { 0% { transform: translateY(-100vh); } 100% { transform: translateY(100vh); } }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="flex justify-center items-center text-cyber-green font-mono relative">
+
+    <!-- CANVAS BACKGROUND: MATRIX DIGITAL RAIN -->
+    <canvas id="matrix-canvas" class="fixed inset-0 z-0 opacity-40 pointer-events-none"></canvas>
+    <div class="scanline"></div>
+
+    <!-- System Toast -->
+    <div id="sys-toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-black border border-cyber-green text-cyber-green px-4 py-2 text-xs z-[100] transition-opacity duration-300 opacity-0 pointer-events-none shadow-[0_0_15px_#0f0]">
+        <span id="toast-text">> SYS_MSG</span>
+    </div>
+
+    <!-- CANVAS IMAGE VIEWER MODAL -->
+    <div id="image-viewer-modal" class="hidden fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center backdrop-blur-sm">
+        <div class="w-full flex justify-between items-center p-4 border-b border-cyber-green bg-black">
+            <span class="text-xs">> IMAGE_ANALYSIS_TOOL</span>
+            <button onclick="closeImageViewer()" class="cyber-button px-3 py-1 hover:bg-cyber-red hover:border-cyber-red hover:text-white text-xs">
+                <i class="fa-solid fa-xmark"></i> CLOSE
+            </button>
+        </div>
+        <div class="flex-1 w-full flex items-center justify-center p-4 relative overflow-hidden">
+            <!-- Canvas where image will be drawn -->
+            <canvas id="viewer-canvas" class="max-w-full max-h-full border border-cyber-border shadow-[0_0_20px_rgba(0,255,0,0.2)] object-contain"></canvas>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="w-full max-w-lg h-full flex flex-col relative z-10 border-x border-cyber-border bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(0,255,0,0.1)]">
+
+        <!-- ==================== 1. DECRYPTION SCREEN ==================== -->
+        <div id="login-screen" class="absolute inset-0 z-40 flex flex-col items-center justify-center p-8 bg-black/90 fade-in">
+            <div class="mb-10 flex flex-col items-center">
+                <i class="fa-solid fa-user-secret text-7xl mb-4 text-cyber-green glitch-text"></i>
+                <h1 class="text-4xl font-bold tracking-[0.2em] text-center glitch-text mt-2">NEXUS_CORE</h1>
+                <p class="text-xs mt-3 opacity-70 border-b border-cyber-border pb-2">> ENCRYPTED P2P CHAT , BY :— SAOUD ALAM</p>
+            </div>
+            
+            <form id="login-form" class="w-full space-y-6">
+                <div>
+                    <label class="block text-xs mb-2 opacity-80">> INSERT_DECRYPTION_KEY:</label>
+                    <input type="password" id="password-input" maxlength="8" required autocomplete="off"
+                        class="cyber-input w-full px-4 py-4 text-center text-3xl tracking-[0.5em] uppercase font-bold">
+                </div>
+                <button type="submit" class="cyber-button w-full py-4 font-bold tracking-widest flex justify-center items-center gap-3 text-lg">
+                    EXECUTE_LOGIN <i class="fa-solid fa-terminal"></i>
+                </button>
+            </form>
+            <div id="login-error" class="text-cyber-red mt-5 text-sm hidden uppercase animate-pulse font-bold">> FATAL: ACCESS_DENIED</div>
+        </div>
+
+        <!-- ==================== 2. NODE IDENTITY SCREEN ==================== -->
+        <div id="profile-screen" class="hidden absolute inset-0 z-30 flex-col items-center justify-center p-6 bg-black/90">
+            <h2 class="text-xl font-bold mb-8 tracking-widest border-b border-cyber-green pb-2 glitch-text">> SELECT_OPERATOR_NODE</h2>
+            <div class="w-full space-y-6">
+                <button onclick="selectUser('MALE ')" class="cyber-button w-full p-6 flex items-center justify-start gap-5 relative group">
+                    <div class="w-12 h-12 flex items-center justify-center border border-cyber-green group-hover:bg-black group-hover:text-cyber-green bg-cyber-green text-black">
+                        <i class="fa-solid fa-server text-2xl"></i>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-bold text-xl tracking-wider">MALE </h3>
+                        <p class="text-[11px] opacity-70 mt-1">[ PRIMARY PROTOCOL ]</p>
+                    </div>
+                </button>
+
+                <button onclick="selectUser('FEMALE ')" class="cyber-button w-full p-6 flex items-center justify-start gap-5 relative group">
+                    <div class="w-12 h-12 flex items-center justify-center border border-cyber-green group-hover:bg-black group-hover:text-cyber-green bg-cyber-green text-black">
+                        <i class="fa-solid fa-network-wired text-2xl"></i>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-bold text-xl tracking-wider">FEMALE </h3>
+                        <p class="text-[11px] opacity-70 mt-1">[ SECONDARY PROTOCOL ]</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== 3. CHAT TERMINAL ==================== -->
+        <div id="chat-screen" class="hidden flex-col h-full w-full z-20 relative bg-transparent">
+            
+            <!-- Terminal Header -->
+            <header class="bg-[#020502] border-b border-cyber-green px-4 py-3 flex items-center justify-between shrink-0 z-10 shadow-[0_4px_10px_rgba(0,255,0,0.1)]">
+                <div class="flex flex-col">
+                    <h2 class="font-bold text-sm tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-lock text-cyber-blue"></i> SECURE_LINK
+                    </h2>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span id="status-indicator" class="text-[10px] uppercase bg-cyber-green text-black px-1.5 font-bold animate-pulse">AWAITING...</span>
+                        <span id="node-identity-display" class="text-[10px] opacity-70 tracking-widest"></span>
+                    </div>
+                </div>
+                <button onclick="logout()" class="cyber-button px-3 py-1.5 text-xs hover:bg-cyber-red hover:text-white hover:border-cyber-red" title="TERMINATE">
+                    <i class="fa-solid fa-power-off"></i> ENDED
+                </button>
+            </header>
+
+            <!-- Messages Area -->
+            <main id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 z-10 scroll-smooth flex flex-col">
+                <div id="loading-spinner" class="flex justify-center items-center h-full m-auto text-sm animate-pulse tracking-widest">
+                    > ESTABLISHING_ENCRYPTED_TUNNEL...
+                </div>
+            </main>
+
+            <!-- Input Area -->
+            <footer class="bg-[#020502] border-t border-cyber-border p-3 shrink-0 z-20 relative shadow-[0_-4px_10px_rgba(0,255,0,0.05)]">
+                
+                <!-- Editing Indicator -->
+                <div id="edit-indicator" class="hidden absolute -top-8 left-0 w-full bg-[#001122] text-cyber-blue text-[10px] py-1.5 px-4 flex justify-between items-center border-t border-cyber-blue tracking-wider">
+                    <span>> OVERWRITING_DATA_PACKET...</span>
+                    <button onclick="cancelEdit()" class="hover:text-white"><i class="fa-solid fa-xmark"></i> ENDED_EDIT</button>
+                </div>
+
+                <!-- File Preview -->
+                <div id="file-preview-container" class="hidden mb-2 p-2 border border-cyber-border bg-black flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-xs truncate max-w-[80%]">
+                        <i class="fa-solid fa-microchip animate-pulse"></i>
+                        <span id="file-preview-name" class="truncate opacity-80">filename.ext</span>
+                        <span class="text-[9px] text-cyber-blue">[BUFFER LOADED]</span>
+                    </div>
+                    <button onclick="removeFile()" class="text-cyber-red hover:text-white px-2"><i class="fa-solid fa-trash"></i></button>
+                </div>
+
+                <form id="message-form" class="flex items-end space-x-2 w-full relative">
+                    <!-- File Upload Button (Max 10MB) -->
+                    <label class="cyber-button w-12 h-12 flex items-center justify-center shrink-0 cursor-pointer text-lg mb-1" title="UPLOAD FILE (MAX 10MB)">
+                        <i class="fa-solid fa-paperclip"></i>
+                        <input type="file" id="file-upload" class="hidden" accept="image/*,video/*,audio/*,.pdf,.txt,.zip">
+                    </label>
+
+                    <div class="flex-1 relative">
+                        <!-- Multi-line text area -->
+                        <textarea id="message-input" rows="1" placeholder="> INPUT_COMMAND..." 
+                            class="cyber-input w-full rounded-none py-3 px-3 resize-none max-h-32 text-sm leading-relaxed"
+                            style="min-height: 48px;"></textarea>
+                    </div>
+
+                    <button type="submit" id="send-btn" class="cyber-button w-14 h-12 flex items-center justify-center shrink-0 text-lg font-bold mb-1">
+                        <i id="send-icon" class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Firebase Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // =====================================================================
+        // ⚠️ GITHUB USERS: REPLACE WITH YOUR OWN FIREBASE CONFIG
+        // =====================================================================
+        let firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "YOUR_API_KEY", authDomain: "YOUR_PROJECT.firebaseapp.com", projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com", messagingSenderId: "YOUR_SENDER_ID", appId: "YOUR_APP_ID"
+        };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nexus-core-chat-v5';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- State Variables ---
+        let currentUser = null;
+        let myNodeId = null; // 'MALE ' or 'FEMALE '
+        let unsubMessages = null, unsubPresence = null;
+        let editingMsgId = null;
+        let selectedFile = null; 
+        window.messageCache = {};
+
+        // --- DOM Elements ---
+        const screens = { login: document.getElementById('login-screen'), profile: document.getElementById('profile-screen'), chat: document.getElementById('chat-screen') };
+        const loginForm = document.getElementById('login-form'), passInput = document.getElementById('password-input'), loginErr = document.getElementById('login-error');
+        const chatMessages = document.getElementById('chat-messages'), msgForm = document.getElementById('message-form'), msgInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn'), sendIcon = document.getElementById('send-icon');
+        const fileUpload = document.getElementById('file-upload'), filePreviewBox = document.getElementById('file-preview-container'), filePreviewName = document.getElementById('file-preview-name');
+        
+        // --- MATRIX RAIN LOGIC (CANVAS) ---
+        const initMatrix = () => {
+            const canvas = document.getElementById('matrix-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const letters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*';
+            const fontSize = 14;
+            const columns = canvas.width / fontSize;
+            const drops = [];
+            for (let x = 0; x < columns; x++) drops[x] = 1;
+
+            const draw = () => {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#0F0';
+                ctx.font = fontSize + 'px Share Tech Mono';
+                for (let i = 0; i < drops.length; i++) {
+                    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+            };
+            setInterval(draw, 33);
+        };
+        initMatrix();
+        window.addEventListener('resize', initMatrix);
+
+        // --- SYS Toast ---
+        const sysMsg = (text, isError = false) => {
+            const toast = document.getElementById('sys-toast');
+            document.getElementById('toast-text').innerHTML = `> ${text}`;
+            toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 text-xs z-[100] transition-opacity duration-300 border font-mono ${isError ? 'bg-black text-cyber-red border-cyber-red shadow-[0_0_15px_#ff003c]' : 'bg-black text-cyber-green border-cyber-green shadow-[0_0_15px_#0f0]'}`;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+        };
+
+        // --- Auto-resize Textarea ---
+        msgInput.addEventListener('input', function() {
+            this.style.height = '48px';
+            this.style.height = (this.scrollHeight < 128 ? this.scrollHeight : 128) + 'px';
+        });
+
+        // --- CANVAS IMAGE COMPRESSION & UPLOAD ---
+        fileUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // NEW 10MB LIMIT
+            const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+            if (file.size > MAX_SIZE) {
+                sysMsg("ERR: FILE EXCEEDS 10MB PROTOCOL LIMIT", true);
+                fileUpload.value = '';
+                return;
+            }
+
+            if (file.type.startsWith('image/')) {
+                // Compress image using Canvas to fit Firestore limits
+                sysMsg("COMPRESSING IMAGE_DATA VIA CANVAS...");
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width, height = img.height;
+                        const MAX_DIM = 1200; // Resize large images
+                        if (width > height && width > MAX_DIM) { height *= MAX_DIM / width; width = MAX_DIM; } 
+                        else if (height > MAX_DIM) { width *= MAX_DIM / height; height = MAX_DIM; }
+                        
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert back to base64 with lower quality for database safety
+                        const compressedData = canvas.toDataURL('image/jpeg', 0.6);
+                        
+                        selectedFile = { data: compressedData, type: 'image/jpeg', name: file.name };
+                        filePreviewName.textContent = file.name + " [COMPRESSED]";
+                        filePreviewBox.classList.remove('hidden');
+                        sysMsg("IMAGE_DATA_LOADED");
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Non-image files: Warn if > 800KB due to firestore doc limit
+                if(file.size > 800 * 1024) {
+                    sysMsg("ERR: NON-IMAGE FILES MUST BE < 800KB FOR FIRESTORE", true);
+                    fileUpload.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    selectedFile = { data: ev.target.result, type: file.type, name: file.name };
+                    filePreviewName.textContent = file.name;
+                    filePreviewBox.classList.remove('hidden');
+                    sysMsg("FILE_DATA_LOADED");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        window.removeFile = () => {
+            selectedFile = null; fileUpload.value = '';
+            filePreviewBox.classList.add('hidden');
+        };
+
+        // --- CANVAS IMAGE VIEWER MODAL LOGIC ---
+        const viewerModal = document.getElementById('image-viewer-modal');
+        const viewerCanvas = document.getElementById('viewer-canvas');
+        const vCtx = viewerCanvas.getContext('2d');
+
+        window.viewImage = (base64Data) => {
+            viewerModal.classList.remove('hidden');
+            const img = new Image();
+            img.onload = () => {
+                // Clear and resize canvas to match image ratio
+                viewerCanvas.width = img.width;
+                viewerCanvas.height = img.height;
+                vCtx.clearRect(0, 0, viewerCanvas.width, viewerCanvas.height);
+                vCtx.drawImage(img, 0, 0);
+            };
+            img.src = base64Data;
+        };
+
+        window.closeImageViewer = () => {
+            viewerModal.classList.add('hidden');
+            vCtx.clearRect(0, 0, viewerCanvas.width, viewerCanvas.height);
+        };
+
+        // --- Auth & Login Logic ---
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                else await signInAnonymously(auth);
+            } catch (e) { sysMsg("CRITICAL: AUTH_SERVER_OFFLINE", true); }
+        };
+        onAuthStateChanged(auth, (user) => { currentUser = user; });
+        initAuth();
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (passInput.value === '6T9') {
+                loginErr.classList.add('hidden'); screens.login.classList.add('hidden');
+                screens.profile.classList.remove('hidden'); screens.profile.classList.add('flex', 'fade-in');
+            } else {
+                loginErr.classList.remove('hidden'); passInput.value = '';
+            }
+        });
+
+        window.selectUser = (nodeId) => {
+            if (!currentUser) return;
+            myNodeId = nodeId; // Set current user's node identity
+            document.getElementById('node-identity-display').textContent = `[ ${nodeId} ]`;
+            screens.profile.classList.add('hidden'); screens.profile.classList.remove('flex');
+            screens.chat.classList.remove('hidden'); screens.chat.classList.add('flex', 'fade-in');
+            startPresence(); loadMessages();
+        };
+
+        const startPresence = async () => {
+            if (!currentUser) return;
+            const presenceRef = doc(db, 'artifacts', appId, 'public', 'data', 'presence', 'system_status');
+            try { await setDoc(presenceRef, { [myNodeId]: true }, { merge: true }); } catch(e) {}
+            
+            const ind = document.getElementById('status-indicator');
+            unsubPresence = onSnapshot(presenceRef, (docSnap) => {
+                if(docSnap.exists() && docSnap.data()['MALE '] && docSnap.data()['FEMALE ']) {
+                    ind.textContent = "LINK_ACTIVE";
+                    ind.className = "text-[10px] uppercase bg-cyber-blue text-black font-bold px-1.5 shadow-[0_0_10px_#00f0ff]";
+                } else {
+                    ind.textContent = "AWAITING_PEER";
+                    ind.className = "text-[10px] uppercase bg-cyber-red text-white font-bold px-1.5 animate-pulse";
+                }
+            });
+        };
+
+        // --- Chat Logic ---
+        const loadMessages = () => {
+            const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages');
+            unsubMessages = onSnapshot(messagesRef, (snapshot) => {
+                const msgs = []; window.messageCache = {};
+                snapshot.forEach(doc => { const d = {id: doc.id, ...doc.data()}; msgs.push(d); window.messageCache[doc.id] = d; });
+                msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                renderMessages(msgs);
+            });
+        };
+
+        const renderMessages = (messages) => {
+            chatMessages.innerHTML = '';
+            if (messages.length === 0) return;
+
+            messages.forEach((msg) => {
+                // LOGIC FIX: 'isMine' is true ONLY if the senderNode matches myNodeId.
+                // This guarantees my messages are ALWAYS on the right, regardless of which node I am.
+                const isMine = msg.senderNode === myNodeId;
+                
+                const div = document.createElement('div');
+                div.className = `flex w-full group ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
+                
+                const bubbleClass = isMine ? 'border border-cyber-green bg-[#001a00] text-cyber-green shadow-[0_0_8px_rgba(0,255,0,0.15)] rounded-l-md rounded-tr-md' : 'border border-cyber-border bg-black text-gray-300 shadow-[0_0_8px_rgba(255,255,255,0.05)] rounded-r-md rounded-tl-md';
+                const nodeLabel = !isMine ? `<div class="text-[9px] mb-1.5 font-bold tracking-widest opacity-80 border-b border-cyber-border pb-1">${msg.senderNode}</div>` : '';
+                
+                let mediaHtml = '';
+                if (msg.fileData) {
+                    if (msg.fileType.startsWith('image/')) {
+                        // Image click triggers Canvas Viewer
+                        mediaHtml = `<img src="${msg.fileData}" onclick="viewImage('${msg.fileData}')" class="max-w-full h-auto max-h-52 border border-cyber-border mb-2 cursor-pointer hover:opacity-80 transition-opacity rounded-sm" title="CLICK TO OPEN IN CANVAS VIEWER">`;
+                    } else if (msg.fileType.startsWith('video/')) {
+                        mediaHtml = `<video src="${msg.fileData}" controls class="max-w-full h-auto max-h-52 border border-cyber-border mb-2 rounded-sm"></video>`;
+                    } else {
+                        mediaHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="block bg-black border border-cyber-green p-2.5 text-xs mb-2 hover:bg-cyber-green hover:text-black transition-colors font-bold rounded-sm"><i class="fa-solid fa-download"></i> DL_FILE: ${msg.fileName}</a>`;
+                    }
+                }
+
+                // Rule: Edit button ONLY appears if there is NO file attached.
+                const canEdit = isMine && !msg.fileData;
+                const editedLabel = msg.isEdited ? `<span class="text-[9px] text-cyber-blue ml-2 tracking-widest">[MODIFIED]</span>` : '';
+                const timeStr = new Date(msg.timestamp).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true});
+
+                div.innerHTML = `
+                    <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'} max-w-[85%] relative">
+                        <!-- Message Box -->
+                        <div class="relative p-3 ${bubbleClass} flex flex-col">
+                            ${nodeLabel}
+                            ${mediaHtml}
+                            <div class="text-[15px] leading-relaxed whitespace-pre-wrap break-words">${msg.text ? msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''}</div>
+                            
+                            <!-- Action Buttons (Edit/Delete) hover menu -->
+                            <div class="absolute ${isMine ? '-left-12' : '-right-12'} top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1.5 z-10">
+                                ${canEdit ? `<button onclick="initEdit('${msg.id}')" class="w-7 h-7 bg-black border border-cyber-blue text-cyber-blue hover:bg-cyber-blue hover:text-black shadow-[0_0_5px_#00f0ff] rounded-sm"><i class="fa-solid fa-pen text-xs"></i></button>` : ''}
+                                <button onclick="deleteMsg('${msg.id}')" class="w-7 h-7 bg-black border border-cyber-red text-cyber-red hover:bg-cyber-red hover:text-white shadow-[0_0_5px_#ff003c] rounded-sm"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Timestamp (OUTSIDE the box) -->
+                        <div class="flex items-center mt-1.5 px-1 opacity-70">
+                            <span class="text-[10px] tracking-wider text-cyber-green">${timeStr}</span>
+                            ${editedLabel}
+                            ${isMine ? '<i class="fa-solid fa-check-double text-[10px] ml-1.5 text-cyber-green"></i>' : ''}
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(div);
+            });
+            setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
+        };
+
+        // --- Edit Message ---
+        window.initEdit = (msgId) => {
+            const msg = window.messageCache[msgId];
+            if (!msg || msg.fileData) return; // Prevent editing files just in case
+            editingMsgId = msgId; msgInput.value = msg.text; msgInput.focus();
+            
+            document.getElementById('edit-indicator').classList.remove('hidden');
+            sendIcon.className = "fa-solid fa-screwdriver-wrench";
+            sendBtn.classList.replace('border-cyber-green', 'border-cyber-blue');
+            sendBtn.classList.replace('text-cyber-green', 'text-cyber-blue');
+            removeFile();
+        };
+
+        window.cancelEdit = () => {
+            editingMsgId = null; msgInput.value = '';
+            document.getElementById('edit-indicator').classList.add('hidden');
+            sendIcon.className = "fa-solid fa-paper-plane";
+            sendBtn.classList.replace('border-cyber-blue', 'border-cyber-green');
+            sendBtn.classList.replace('text-cyber-blue', 'text-cyber-green');
+        };
+
+        msgForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = msgInput.value.trim();
+            if ((!text && !selectedFile) || !currentUser) return;
+
+            const isEditing = !!editingMsgId;
+            const currentEditId = editingMsgId; 
+            const filePayload = selectedFile; 
+
+            msgInput.value = ''; msgInput.style.height = '48px'; sendBtn.disabled = true;
+            if(isEditing) cancelEdit(); else removeFile();
+
+            try {
+                if (isEditing) {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_messages', currentEditId), { text: text, isEdited: true });
+                } else {
+                    const payload = { text: text, senderId: currentUser.uid, senderNode: myNodeId, timestamp: Date.now() };
+                    if (filePayload) { payload.fileData = filePayload.data; payload.fileType = filePayload.type; payload.fileName = filePayload.name; }
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages'), payload);
+                }
+            } catch (error) { sysMsg("TRANSMISSION_FAILED", true); } 
+            finally { sendBtn.disabled = false; msgInput.focus(); }
+        });
+
+        window.deleteMsg = async (msgId) => {
+            if (!currentUser) return;
+            try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_messages', msgId)); } 
+            catch (e) { sysMsg("DELETE_FAILED", true); }
+        };
+
+        window.logout = async () => {
+            if (myNodeId) await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'presence', 'system_status'), { [myNodeId]: false }, { merge: true }).catch(e=>{});
+            if (unsubMessages) unsubMessages(); if (unsubPresence) unsubPresence();
+            myNodeId = null;
+            screens.chat.classList.remove('flex', 'fade-in'); screens.chat.classList.add('hidden');
+            screens.profile.classList.remove('flex', 'fade-in'); screens.profile.classList.add('hidden');
+            screens.login.classList.remove('hidden'); screens.login.classList.add('flex', 'fade-in');
+        };
+    </script>
+</body>
+</html>
+
+
